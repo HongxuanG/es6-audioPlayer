@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐播放器</title>
+    <link rel="stylesheet" href="./assets/font/css/font-awesome.css">
+    <style>
+        html,body,p,h2{
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body{
+            background-color: #ccc;
+            width: 100%;
+        }
+        ul{
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .wrapper{
+            max-width: 640px;
+            min-width: 320px;
+            height: 100%;
+        }
+        .wrapper main{
+
+        }
+        .wrapper main .music_info{
+            margin-top: 20px;
+            text-align: center;
+        }
+        .wrapper main .music_info h2{
+            letter-spacing: 2px;
+        }
+        .wrapper main .music_info p{
+            font-size: 14px;
+            color: #333;
+        }
+        .wrapper main .music_pan{
+            margin: 0 auto;
+            margin-top: 60px;
+            width: 200px;
+            height: 200px;
+            background-color: #fff;
+            border: 2px solid red;
+            border-radius: 50%;
+            /* animation: rotateItem 8s linear 0s infinite; */
+        }
+        .wrapper main .music_pan.restart{
+            animation: rotateItem1 8s linear 0s infinite;
+        }
+        .wrapper main .music_pan.start{
+            animation: rotateItem 8s linear 0s infinite;
+        }
+        .wrapper main .music_pan img{
+            display: block;
+        }
+        .wrapper .controls{
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 60px;
+            width: 100%;
+            background-color: pink;
+        }
+        .wrapper .controls ul{
+            width: 100%;
+            display: flex;
+        }
+        .wrapper .controls ul li{
+            flex: 1;
+            text-align: center;
+            line-height: 60px;
+        }
+        .wrapper .controls ul li a{
+            box-sizing: border-box;
+            margin: 5px 0;
+            display: inline-block;
+            border: 2px solid #f0f0f0;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ccc;
+            vertical-align: middle;
+        }
+        .wrapper .controls ul li a.hide{
+            display: none;
+        }
+        .wrapper .controls ul li a span.icon{
+            color: white;
+        }
+        @keyframes rotateItem {
+            0%{
+                transform: rotate(0deg);
+            }
+            100%{
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes rotateItem1 {
+            0%{
+                transform: rotate(0deg);
+            }
+            100%{
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <main>
+            <div class="music_pan">
+                <img src="./assets/img/music.png" alt="">
+            </div>
+            <div class="music_info">
+                <!-- <h2>情歌王</h2>
+                <p>刘德华</p> -->
+            </div>
+        </main>
+        <div class="controls">
+            <audio src="./assets/audio/Anan Ryoko - Refrain.mp3" ></audio>
+            <ul>
+                <li class="prev">
+                    <a href="javascript:;">
+                        <span class="icon fa fa-step-backward fa-2x"></span>
+                    </a>
+                </li>
+                <li class="playOrpause">
+                    <a href="javascript:;" class="play">
+                        <span class="icon fa fa-play fa-2x"></span>
+                    </a>
+                    <a href="javascript:;" class="pause hide">
+                        <span class="icon fa fa-pause fa-2x"></span>
+                    </a>
+                </li>
+                <li class="next">
+                    <a href="javascript:;">
+                        <span class="icon fa fa-step-forward fa-2x"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        class myAudio{
+            constructor(){
+                let that = this;
+                this.audio = document.querySelector("audio");
+                this.play = document.querySelector(".playOrpause>.play");
+                this.pause = document.querySelector(".playOrpause>.pause");
+                this.prev = document.querySelector(".prev");
+                this.next = document.querySelector(".next");
+                this.music_pan = document.querySelector(".music_pan");
+                this.playOrpause_a = document.querySelectorAll(".playOrpause>a");
+                this.music_info = document.querySelector("main>.music_info");
+                this.index = 0;
+                this.data = [
+                    {path:"./assets/audio/Anan Ryoko - Refrain.mp3"},
+                    {path:"./assets/audio/Aki阿杰 - 千梦.mp3"},
+                    {path:"./assets/audio/G.E.M.邓紫棋 - 龙卷风.mp3"},
+                    {path:"./assets/audio/Biscuits - Let Her Go.mp3"},
+                    {path:"./assets/audio/DAISHI DANCE - Take me hand.mp3"},
+                    {path:"./assets/audio/Saiki - 鸟之诗 钢琴.mp3"},
+                    {path:"./assets/audio/smile_小千 - 乌衣巷.mp3"},
+                    {path:"./assets/audio/まふまふ - 命に嫌われている。(cover 初音ミク).mp3"},
+                    {path:"./assets/audio/杉田智和 - 哆啦A梦.mp3"},
+                ]
+                this.isPlay = false;
+                this.init();
+            }
+            // 初始化
+            init(){
+                this.formatData()
+                this.controls();
+            }
+            formatData(){
+                for(let i =0;i<this.data.length;i++){
+                    // 解剖path得到music_name和music_author，重新加入到data
+                    let arr = this.data[i].path.split("/");
+                    let music_info = arr[arr.length-1].split(".m")[0]
+                    let name = music_info.split("-")[0];
+                    let author = music_info.split("-")[1];
+                    Reflect.set(this.data[i],"music_name",name);
+                    Reflect.set(this.data[i],"music_author",author);
+                }
+                // 初始化，一打开页面就是第一首
+                this.render(0);
+            }
+            // 渲染数据
+            render(i){
+                this.audio.src = `${this.data[i].path}`;
+                this.music_info.innerHTML = `
+                    <h2>${this.data[i].music_name}</h2>
+                    <p>${this.data[i].music_author}</p>
+                `
+            }
+            controls(){
+                this.play.onclick = ()=>{
+                    for(let i=0;i<this.playOrpause_a.length;i++){
+                        this.playOrpause_a[i].classList.remove("hide");
+                    }
+                    this.play.classList.add("hide");
+                    this.isPlay = true;
+                    // 播放音乐
+                    this.audio.play();
+                    // 自动播放
+                    this.audio.autoplay = true;
+                    // 如果包含restart，则不用修改类名，不包含则需要修改
+                    if(this.music_pan.classList.contains("restart")){
+                        this.music_pan.className = "music_pan restart";
+                    }else{
+                        this.music_pan.className = "music_pan start";
+                    }
+                    this.music_pan.style.animationPlayState = "running";
+                }
+                this.pause.onclick = ()=>{
+                    for(let i=0;i<this.playOrpause_a.length;i++){
+                        this.playOrpause_a[i].classList.remove("hide");
+                    }
+                    this.pause.classList.add("hide");
+                    this.isPlay = false;
+                    // 暂停音乐
+                    this.audio.pause();
+                    // 自动播放取消
+                    this.audio.autoplay = false;
+                    // 当音乐暂定时，旋转动画也要暂定
+                    if(!this.isPlay){
+                        // 这是暂定动画animation-play-state:paused/running
+                        this.music_pan.style.animationPlayState = "paused";
+                    }
+                   
+                }
+                // 上一首
+                this.prev.onclick = ()=>{
+                    this.index--;
+                    if(this.index<0){
+                        this.index = this.data.length-1;
+                    }
+                    this.render(this.index);
+                    this.rotatoPan();
+                }
+                // 下一首
+                this.next.onclick = ()=>{
+                    this.index++;
+                    if(this.index>=this.data.length){
+                        this.index = 0;
+                    }
+                    this.render(this.index);
+                    this.rotatoPan();
+                }
+            }
+            rotatoPan(){
+                // 重新开始动画的思路：重新定义一个不一样的动画名字，来回切换名字
+                if(this.isPlay){
+                    if(this.music_pan.classList.contains("start")){
+                        this.music_pan.className = "music_pan restart";
+                    }else{
+                        this.music_pan.className = "music_pan start";
+                    }
+                }else{
+                    this.music_pan.className = "music_pan";
+                }
+            }
+        }
+        new myAudio();
+    </script>
+</body>
+</html>
