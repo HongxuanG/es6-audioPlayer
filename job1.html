@@ -21,7 +21,7 @@
             list-style: none;
         }
         .wrapper{
-            max-width: 640px;
+            max-width: 900px;
             min-width: 320px;
             height: 100%;
         }
@@ -147,7 +147,7 @@
     </div>
     <script>
         class myAudio{
-            constructor(){
+            constructor(option){
                 let that = this;
                 this.audio = document.querySelector("audio");
                 this.play = document.querySelector(".playOrpause>.play");
@@ -158,25 +158,15 @@
                 this.playOrpause_a = document.querySelectorAll(".playOrpause>a");
                 this.music_info = document.querySelector("main>.music_info");
                 this.index = 0;
-                this.data = [
-                    {path:"./assets/audio/Anan Ryoko - Refrain.mp3"},
-                    {path:"./assets/audio/Aki阿杰 - 千梦.mp3"},
-                    {path:"./assets/audio/G.E.M.邓紫棋 - 龙卷风.mp3"},
-                    {path:"./assets/audio/Biscuits - Let Her Go.mp3"},
-                    {path:"./assets/audio/DAISHI DANCE - Take me hand.mp3"},
-                    {path:"./assets/audio/Saiki - 鸟之诗 钢琴.mp3"},
-                    {path:"./assets/audio/smile_小千 - 乌衣巷.mp3"},
-                    {path:"./assets/audio/まふまふ - 命に嫌われている。(cover 初音ミク).mp3"},
-                    {path:"./assets/audio/杉田智和 - 哆啦A梦.mp3"},
-                ]
+                this.data = option;
                 this.isPlay = false;
-                this.init();
             }
             // 初始化
             init(){
                 this.formatData()
                 this.controls();
             }
+            // 初始化数据
             formatData(){
                 for(let i =0;i<this.data.length;i++){
                     // 解剖path得到music_name和music_author，重新加入到data
@@ -266,7 +256,20 @@
                 }
             }
         }
-        new myAudio();
+
+        let music = new myAudio([
+                    {path:"./assets/audio/Anan Ryoko - Refrain.mp3"},
+                    {path:"./assets/audio/Aki阿杰 - 千梦.mp3"},
+                    {path:"./assets/audio/G.E.M.邓紫棋 - 龙卷风.mp3"},
+                    {path:"./assets/audio/Biscuits - Let Her Go.mp3"},
+                    {path:"./assets/audio/DAISHI DANCE - Take me hand.mp3"},
+                    {path:"./assets/audio/Saiki - 鸟之诗 钢琴.mp3"},
+                    {path:"./assets/audio/smile_小千 - 乌衣巷.mp3"},
+                    {path:"./assets/audio/まふまふ - 命に嫌われている。(cover 初音ミク).mp3"},
+                    {path:"./assets/audio/杉田智和 - 哆啦A梦.mp3"},
+                ]);
+        // 调用方法
+        music.init();
     </script>
 </body>
 </html>
