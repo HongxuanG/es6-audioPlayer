@@ -26,7 +26,7 @@
             height: 100%;
         }
         .wrapper main{
-
+            
         }
         .wrapper main .music_info{
             margin-top: 20px;
@@ -58,6 +58,46 @@
         .wrapper main .music_pan img{
             display: block;
         }
+        /* 音量 */
+        .wrapper .volumeSwitch{
+            display: inline-block;
+            position: relative;
+            margin-left: 10px;
+        }
+        .wrapper .volumeSwitch .icon{
+            color: #fff;
+        }
+        .wrapper .volumeSwitch>div {
+            width: 15px;
+            height: 100px;
+            position: absolute;
+            top: -100px;
+            left: 0;
+        }
+        .wrapper .volumeSwitch>div .volumeLine{
+            width: 5px;
+            height: 100px;
+            background-color: #f0f0f0;
+            margin: 0 auto;
+        }
+        .wrapper .volumeSwitch>div .volumeLine .volumePg{
+            width: 5px;
+            /* 逆向思维，100px时音量为 0, 0px时音量为 1 */
+            height: 0px;
+            background-color: pink;
+            position: relative;
+        }
+        .wrapper .volumeSwitch>div .volumeLine .volumePg .volumeCircle{
+            display: block;
+            width: 10px;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 1);
+            border-radius: 50%;
+            transform: translateX(-25%);
+            position: absolute;
+            bottom: -5px;
+        }
+        /* 控制器 */
         .wrapper .controls{
             position: fixed;
             bottom: 0;
@@ -80,11 +120,12 @@
             margin: 5px 0;
             display: inline-block;
             border: 2px solid #f0f0f0;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background-color: #ccc;
             vertical-align: middle;
+            line-height: 40px;
         }
         .wrapper .controls ul li a.hide{
             display: none;
@@ -108,38 +149,117 @@
                 transform: rotate(360deg);
             }
         }
+        .progress{
+            width: 100%;
+            height: 30px;
+            background-color: skyblue;
+            position: fixed;
+            bottom: 60px;
+            left: 0;
+            display: flex;
+        }
+        .progress .currentTime,
+        .progress .totalTime{
+            flex: 1;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+        }
+        .progress .line{
+            flex: 5;
+            box-sizing:border-box;
+            padding: 0 10px;
+        }
+        .progress .line .total_line{
+            width: 100%;
+            height: 5px;
+            background-color: #ccc;
+            margin-top: 15px;
+            transform: translateY(-50%);
+        }
+        .progress .line .total_line .current_pg{
+            /* 此处width会变化 */
+            width: 0;
+            height: 100%;
+            background-color: pink;
+            position: relative;
+        }
+        .progress .line .total_line .current_pg .circle{
+            display: block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 1);
+            transform: translateY(-25%);
+            position: absolute;
+            right: -5px;
+        }
     </style>
 </head>
 <body>
     <div class="wrapper">
+        <!-- 音乐信息 -->
         <main>
             <div class="music_pan">
                 <img src="./assets/img/music.png" alt="">
             </div>
-            <div class="music_info">
-                <!-- <h2>情歌王</h2>
-                <p>刘德华</p> -->
-            </div>
+            <div class="music_info" ></div>
         </main>
+        <!-- 音量值 -->
+        <div class="volumeSwitch" id="volume_switch">
+            <span class="icon fa fa-volume-up"></span>
+            <div>
+                <ul class="volumeLine" id="volume_line">
+                    <li class="volumePg" id="volume_Pg">
+                        <span class="volumeCircle" id="volume_circle"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- 进度条 -->
+        <div class="progress">
+            <div class="currentTime" id="current_Time">00:00</div>
+            <div class="line">
+                <ul class="total_line" id="totalLine">
+                    <li class="current_pg" id="currentPg">
+                        <span class="circle" id="circle"></span>
+                    </li>
+                </ul>
+            </div>
+            <div class="totalTime" id="total_Time">00:00</div>
+        </div>
+        <!-- 控制器 -->
         <div class="controls">
-            <audio src="./assets/audio/Anan Ryoko - Refrain.mp3" ></audio>
+            <!-- 核心 -->
+            <audio src="./assets/audio/Anan Ryoko - Refrain.mp3"></audio>
+            <!-- 核心 -->
             <ul>
+                <li class="again" id="again">
+                    <a href="javascript:;">
+                        <span class="icon fa fa-undo fa-lg"></span>
+                    </a>
+                </li>
                 <li class="prev">
                     <a href="javascript:;">
-                        <span class="icon fa fa-step-backward fa-2x"></span>
+                        <span class="icon fa fa-step-backward fa-lg"></span>
                     </a>
                 </li>
                 <li class="playOrpause">
                     <a href="javascript:;" class="play">
-                        <span class="icon fa fa-play fa-2x"></span>
+                        <span class="icon fa fa-play fa-lg"></span>
                     </a>
                     <a href="javascript:;" class="pause hide">
-                        <span class="icon fa fa-pause fa-2x"></span>
+                        <span class="icon fa fa-pause fa-lg"></span>
                     </a>
                 </li>
                 <li class="next">
                     <a href="javascript:;">
-                        <span class="icon fa fa-step-forward fa-2x"></span>
+                        <span class="icon fa fa-step-forward fa-lg"></span>
+                    </a>
+                </li>
+                <li class="menu" id="menu">
+                    <a href="javascript:;">
+                        <span class="icon fa fa-align-justify fa-lg"></span>
                     </a>
                 </li>
             </ul>
@@ -149,6 +269,8 @@
         class myAudio{
             constructor(option){
                 let that = this;
+                this.main = document.querySelector("main");
+                
                 this.audio = document.querySelector("audio");
                 this.play = document.querySelector(".playOrpause>.play");
                 this.pause = document.querySelector(".playOrpause>.pause");
@@ -157,17 +279,41 @@
                 this.music_pan = document.querySelector(".music_pan");
                 this.playOrpause_a = document.querySelectorAll(".playOrpause>a");
                 this.music_info = document.querySelector("main>.music_info");
+                this.total_Time = document.querySelector("#total_Time");
+                this.current_Time = document.querySelector("#current_Time");
+                this.circle = document.querySelector("#circle");
+                this.current_pg = document.querySelector("#currentPg");
+                this.totalLine = document.querySelector("#totalLine");
+                this.again = document.querySelector("#again");
+                this.menu = document.querySelector("#menu");
+                // 音量有关的变量
+                this.volume_switch = document.querySelector("#volume_switch");
+                this.volume_line = document.querySelector("#volume_line");
+                this.volume_Pg = document.querySelector("#volume_Pg");
+                this.volume_circle = document.querySelector("#volume_circle");
+                this.volumeLineHeight = this.volume_line.offsetHeight;
+                this.volumeTop = this.volume_switch.offsetTop;
+                
                 this.index = 0;
                 this.data = option;
+                // 是否正在播放 默认为否
                 this.isPlay = false;
+                // 是否循环播放 默认为否
+                this.isLoop = false;
+                // 进度条左边距离页面的距离
+                this.progressLeft = this.totalLine.offsetLeft;
+                // 进度条总长度
+                this.progressWidth = this.totalLine.offsetWidth;
             }
             // 初始化
             init(){
-                this.formatData()
+                this.initData();
                 this.controls();
+                this.dragCircle();
+                this.dragVolume();
             }
             // 初始化数据
-            formatData(){
+            initData(){
                 for(let i =0;i<this.data.length;i++){
                     // 解剖path得到music_name和music_author，重新加入到data
                     let arr = this.data[i].path.split("/");
@@ -179,6 +325,32 @@
                 }
                 // 初始化，一打开页面就是第一首
                 this.render(0);
+                // 渲染音乐总时长
+                this.audio.oncanplay = ()=>{
+                    let totalSeconds = this.audio.duration;
+                    let currentSeconds = this.audio.currentTime;
+                    this.total_Time.innerHTML = this.formatTime(totalSeconds);
+                    this.current_Time.innerHTML = this.formatTime(currentSeconds);
+                }
+                // 当前播放时间发生改变时，播放中常用的时间处理
+                this.audio.ontimeupdate = ()=>{
+                    let totalSeconds = this.audio.duration;
+                    let currentSeconds = this.audio.currentTime;
+                    this.total_Time.innerHTML = this.formatTime(totalSeconds);
+                    this.current_Time.innerHTML = this.formatTime(currentSeconds);
+                    // 求出比例，利用 播放总时长 比 当前所在时间 = 进度条总长度 比 当前进度的长度 求出 当前进度的长度
+                    this.current_pg.style.width = currentSeconds * this.progressWidth / totalSeconds + "px";
+                }
+            }
+            // 格式化事件
+            formatTime(seconds){
+                let hour = Math.floor(seconds/3600);
+                let min = Math.floor(seconds%3600/60);
+                let second =  Math.floor(seconds%3600%60);
+                hour = hour > 9 ? hour : "0"+hour;
+                min = min > 9 ? min : "0"+min;
+                second = second > 9 ? second : "0"+second;
+                return `${min}:${second}`;
             }
             // 渲染数据
             render(i){
@@ -188,7 +360,9 @@
                     <p>${this.data[i].music_author}</p>
                 `
             }
+            // 控制器
             controls(){
+                // 播放
                 this.play.onclick = ()=>{
                     for(let i=0;i<this.playOrpause_a.length;i++){
                         this.playOrpause_a[i].classList.remove("hide");
@@ -207,6 +381,7 @@
                     }
                     this.music_pan.style.animationPlayState = "running";
                 }
+                // 暂停
                 this.pause.onclick = ()=>{
                     for(let i=0;i<this.playOrpause_a.length;i++){
                         this.playOrpause_a[i].classList.remove("hide");
@@ -222,7 +397,6 @@
                         // 这是暂定动画animation-play-state:paused/running
                         this.music_pan.style.animationPlayState = "paused";
                     }
-                   
                 }
                 // 上一首
                 this.prev.onclick = ()=>{
@@ -242,7 +416,18 @@
                     this.render(this.index);
                     this.rotatoPan();
                 }
+                // 循环播放
+                this.again.onclick = ()=>{
+                    if(!this.isLoop){
+                        this.audio.loop = true;
+                        this.isLoop = true;
+                    }else{
+                        this.audio.loop = false;
+                        this.isLoop = false;
+                    }
+                }
             }
+            // 转动音乐盘
             rotatoPan(){
                 // 重新开始动画的思路：重新定义一个不一样的动画名字，来回切换名字
                 if(this.isPlay){
@@ -255,19 +440,53 @@
                     this.music_pan.className = "music_pan";
                 }
             }
+            // 拖拽小圆点
+            dragCircle(){
+                let startX = 0;
+                let moveX = 0;
+                this.circle.ontouchstart = (event)=>{
+                    startX = event.touches[0].pageX;
+                }
+                this.circle.ontouchmove = (event)=>{
+                    moveX = event.touches[0].pageX;
+                    this.current_pg.style.width = moveX - this.progressLeft + "px";
+                    if(this.current_pg.offsetWidth>this.progressWidth){
+                        this.current_pg.style.width = this.progressWidth + "px";
+                    }else if(this.current_pg.offsetWidth<0){
+                        this.current_pg.style.width = 0 + "px";
+                    }
+                    // 求出比例，利用 播放总时长 比 当前所在时间 = 进度条总长度 比 当前进度的长度 求出 当前所在时间
+                    this.audio.currentTime = this.audio.duration * this.current_pg.offsetWidth / this.progressWidth;
+                }
+            }
+            // 拖拽音量键
+            dragVolume(){
+                let moveY = 0;
+                this.volume_circle.ontouchmove = (event)=>{
+                    moveY = event.touches[0].pageY;
+                    this.volume_Pg.style.height = moveY - (this.volumeTop - this.volumeLineHeight) - this.main.offsetTop + "px";
+                    if(this.volume_Pg.offsetHeight > this.volumeLineHeight){
+                        this.volume_Pg.style.height = this.volumeLineHeight + "px";
+                    }else if(this.volume_Pg.offsetHeight<0){
+                        this.volume_Pg.style.height = 0 + "px";
+                    }
+                    // 利用比例完成
+                    this.audio.volume = (this.volumeLineHeight-this.volume_Pg.offsetHeight) / this.volumeLineHeight;
+                }
+            }
         }
 
         let music = new myAudio([
-                    {path:"./assets/audio/Anan Ryoko - Refrain.mp3"},
-                    {path:"./assets/audio/Aki阿杰 - 千梦.mp3"},
-                    {path:"./assets/audio/G.E.M.邓紫棋 - 龙卷风.mp3"},
-                    {path:"./assets/audio/Biscuits - Let Her Go.mp3"},
-                    {path:"./assets/audio/DAISHI DANCE - Take me hand.mp3"},
-                    {path:"./assets/audio/Saiki - 鸟之诗 钢琴.mp3"},
-                    {path:"./assets/audio/smile_小千 - 乌衣巷.mp3"},
-                    {path:"./assets/audio/まふまふ - 命に嫌われている。(cover 初音ミク).mp3"},
-                    {path:"./assets/audio/杉田智和 - 哆啦A梦.mp3"},
-                ]);
+            {path:"./assets/audio/Anan Ryoko - Refrain.mp3"},
+            {path:"./assets/audio/Aki阿杰 - 千梦.mp3"},
+            {path:"./assets/audio/G.E.M.邓紫棋 - 龙卷风.mp3"},
+            {path:"./assets/audio/Biscuits - Let Her Go.mp3"},
+            {path:"./assets/audio/DAISHI DANCE - Take me hand.mp3"},
+            {path:"./assets/audio/Saiki - 鸟之诗 钢琴.mp3"},
+            {path:"./assets/audio/smile_小千 - 乌衣巷.mp3"},
+            {path:"./assets/audio/まふまふ - 命に嫌われている。(cover 初音ミク).mp3"},
+            {path:"./assets/audio/杉田智和 - 哆啦A梦.mp3"},
+        ]);
         // 调用方法
         music.init();
     </script>
